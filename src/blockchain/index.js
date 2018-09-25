@@ -17,4 +17,12 @@ export default class Blockchain {
 
     this.chain.push(genesisBlock);
   }
+
+  createBlock(data) {
+    const previousBlock = this.chain[this.chain.length - 1];
+    const nextIndex = previousBlock.index + 1;
+    const nextBlock = new Block(nextIndex, data, previousBlock.hash);
+
+    this.chain.push(nextBlock);
+  }
 }
