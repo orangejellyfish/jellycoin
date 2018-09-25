@@ -3,6 +3,7 @@ import Swarm from 'discovery-swarm';
 import getPort from 'get-port';
 import bodyParser from 'body-parser';
 import Blockchain from '../blockchain';
+import Transaction from '../transaction';
 
 const P2P_CHANNEL = 'jc';
 const server = express();
@@ -49,5 +50,25 @@ function message(peer, message) {
   server.use(bodyParser.json());
   server.listen(HTTP_SERVER_PORT, () => {
     console.log(`\nHTTP server listening on port ${HTTP_SERVER_PORT}`);
+  });
+
+  // Get the current state of the chain stored by this node.
+  server.get('/blockchain', (req, res) => {
+    res.json(chain);
+  });
+
+  // Create a new block.
+  server.post('/block', (req, res) => {
+    if (!chain) {
+      return res.sendStatus(400);
+    }
+
+    console.log('\nCreating new block...');
+
+    chain.createBlock(
+      new Transaction(req.body.from, req.body.to, req.body.amount),
+    );
+
+    return res.sendStatus(201);
   });
 })();
