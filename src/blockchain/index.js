@@ -32,4 +32,11 @@ export default class Blockchain {
 
     return nextBlock;
   }
+
+  validateBlock(block) {
+    const previousBlock = this.chain[this.chain.length - 1];
+
+    return block.previousHash === previousBlock.hash
+      && block.index === previousBlock.index + 1;
+  }
 }
