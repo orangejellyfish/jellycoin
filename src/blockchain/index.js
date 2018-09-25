@@ -20,4 +20,16 @@ export default class Blockchain {
 
     this.chain.push(genesisBlock);
   }
+
+  // Create the next block in the chain based on the index and hash of the
+  // current latest block.
+  createBlock(data) {
+    const previousBlock = this.chain[this.chain.length - 1];
+    const nextIndex = previousBlock.index + 1;
+    const nextBlock = new Block(nextIndex, data, previousBlock.hash);
+
+    this.chain.push(nextBlock);
+
+    return nextBlock;
+  }
 }
