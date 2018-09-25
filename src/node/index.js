@@ -2,11 +2,13 @@ import express from 'express';
 import Swarm from 'discovery-swarm';
 import getPort from 'get-port';
 import bodyParser from 'body-parser';
+import Blockchain from '../blockchain';
 
 const P2P_CHANNEL = 'jc';
 const server = express();
 const swarm = Swarm();
 const peers = [];
+let chain = new Blockchain();
 
 // Utility functions for P2P communication. We can "broadcast" a message to the
 // entire network or we can directly "message" an individual peer.
