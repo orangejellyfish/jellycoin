@@ -1,0 +1,23 @@
+{
+  "name": "jellycoin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/register": "^7.0.0",
+    "body-parser": "^1.18.3",
+    "discovery-swarm": "^5.1.2",
+    "express": "^4.16.3",
+    "get-port": "^4.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "eslint": "^5.5.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  }
+}
