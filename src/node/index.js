@@ -126,9 +126,11 @@ function handleReceiveBlock(peer, packet) {
 
     console.log('\nCreating new block...');
 
-    chain.createBlock(
+    const nextBlock = chain.createBlock(
       new Transaction(req.body.from, req.body.to, req.body.amount),
     );
+
+    broadcast({ message: 'BLOCK', data: nextBlock });
 
     return res.sendStatus(201);
   });
