@@ -27,6 +27,23 @@ function handleGetBlockchain(peer) {
   message(peer, { message: 'BLOCKCHAIN', data: chain });
 }
 
+function handleReceiveBlockchain(peer, packet) {
+  // A peer has sent us their current copy of the chain. If theirs is
+  // longer than ours we can replace ours.
+  //
+  // TODO: validate the received chain in full.
+  //
+  console.log('\nReceived chain from peer...');
+  const newChain = new Blockchain(packet.data);
+
+  if (newChain.getLatestBlock().index > chain.getLatestBlock().index) {
+    console.log('Received chain is longer... replacing');
+    chain = newChain;
+  } else {
+    console.log('Received chain is not longer... ignoring');
+  }
+}
+
 // Start the HTTP server and the P2P connection.
 (async () => {
   const HTTP_SERVER_PORT = await getPort();
@@ -48,6 +65,10 @@ function handleGetBlockchain(peer) {
         case 'GET_BLOCKCHAIN':
           // A peer needs the full chain.
           return handleGetBlockchain(connection, obj);
+
+        case 'BLOCKCHAIN':
+          // A peer has sent us their copy of the chain.
+          return handleReceiveBlockchain(connection, obj);
 
         default:
           // Ignore unknown messages.
