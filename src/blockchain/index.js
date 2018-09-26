@@ -5,8 +5,10 @@ export default class Blockchain {
   constructor(blockchain) {
     if (blockchain) {
       this.chain = blockchain.chain;
+      this.difficulty = blockchain.difficulty;
     } else {
       this.chain = [];
+      this.difficulty = 4;
       this.createGenesisBlock();
     }
   }
@@ -18,6 +20,7 @@ export default class Blockchain {
     const genesisTransaction = new Transaction(null, 'alice', 50);
     const genesisBlock = new Block(0, genesisTransaction, '0'.repeat(64));
 
+    genesisBlock.findNonce(this.difficulty);
     this.chain.push(genesisBlock);
   }
 
@@ -28,6 +31,7 @@ export default class Blockchain {
     const nextIndex = previousBlock.index + 1;
     const nextBlock = new Block(nextIndex, data, previousBlock.hash);
 
+    nextBlock.findNonce(this.difficulty);
     this.chain.push(nextBlock);
 
     return nextBlock;
