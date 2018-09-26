@@ -21,6 +21,12 @@ function message(peer, message) {
   peer.write(JSON.stringify(message));
 }
 
+// Handle messages from the P2P network.
+function handleGetBlockchain(peer) {
+  console.log('\nPeer requested full chain... sending');
+  message(peer, { message: 'BLOCKCHAIN', data: chain });
+}
+
 // Start the HTTP server and the P2P connection.
 (async () => {
   const HTTP_SERVER_PORT = await getPort();
@@ -39,6 +45,10 @@ function message(peer, message) {
       const obj = JSON.parse(data);
 
       switch (obj.message) {
+        case 'GET_BLOCKCHAIN':
+          // A peer needs the full chain.
+          return handleGetBlockchain(connection, obj);
+
         default:
           // Ignore unknown messages.
       }
