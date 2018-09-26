@@ -43,4 +43,12 @@ export default class Blockchain {
     return block.previousHash === previousBlock.hash
       && block.index === previousBlock.index + 1;
   }
+
+  append(block) {
+    this.chain.push(block);
+  }
+
+  getLatestBlock() {
+    return this.chain[this.chain.length - 1];
+  }
 }
