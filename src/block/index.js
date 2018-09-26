@@ -2,12 +2,18 @@ import crypto from 'crypto';
 
 export default class Block {
   constructor(index, data, previousHash) {
-    this.index = index;
-    this.data = JSON.stringify(data);
-    this.timestamp = new Date().getTime();
-    this.nonce = 0;
-    this.hash = this.createHash();
-    this.previousHash = previousHash;
+    if (typeof index === 'object') {
+      Object.assign(this, index);
+    } else if (typeof index === 'number') {
+      this.index = index;
+      this.data = JSON.stringify(data);
+      this.timestamp = new Date().getTime();
+      this.nonce = 0;
+      this.hash = this.createHash();
+      this.previousHash = previousHash;
+    } else {
+      throw new Error('Could not construct the block.');
+    }
   }
 
   createHash() {
@@ -32,5 +38,10 @@ export default class Block {
       this.nonce++;
       this.hash = this.createHash();
     }
+  }
+
+  // Validate the block to ensure its hash is correct.
+  isValid() {
+    return this.hash === this.createHash();
   }
 }

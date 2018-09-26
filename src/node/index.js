@@ -4,6 +4,7 @@ import getPort from 'get-port';
 import bodyParser from 'body-parser';
 import Blockchain from '../blockchain';
 import Transaction from '../transaction';
+import Block from '../block';
 
 const P2P_CHANNEL = 'jc';
 const server = express();
@@ -44,6 +45,31 @@ function handleReceiveBlockchain(peer, packet) {
   }
 }
 
+function handleReceiveBlock(peer, packet) {
+  // A peer has created a new block. We need to validate the block in its own
+  // right to ensure the peer has got the correct proof-of-work nonce. We also
+  // need to check whether we can append the block to the chain we currently
+  // hold. If our chain is more than one block behind we'll have to ask peers to
+  // send their latest version.
+  const newBlock = new Block(packet.data);
+
+  console.log('\nReceived new block...');
+  if (newBlock.isValid()) {
+    console.log('New block is valid...');
+
+    if (chain.validateBlock(newBlock)) {
+      console.log('New block is valid for our current chain... appending');
+      return chain.append(newBlock);
+    }
+
+    console.log('New block is invalid for our current chain...');
+    return broadcast({ message: 'GET_BLOCKCHAIN' });
+  }
+
+  console.log('New block is invalid... ignoring');
+}
+
+
 // Start the HTTP server and the P2P connection.
 (async () => {
   const HTTP_SERVER_PORT = await getPort();
@@ -69,6 +95,10 @@ function handleReceiveBlockchain(peer, packet) {
         case 'BLOCKCHAIN':
           // A peer has sent us their copy of the chain.
           return handleReceiveBlockchain(connection, obj);
+
+        case 'BLOCK':
+          // A peer has sent us a new block.
+          return handleReceiveBlock(connection, obj);
 
         default:
           // Ignore unknown messages.
